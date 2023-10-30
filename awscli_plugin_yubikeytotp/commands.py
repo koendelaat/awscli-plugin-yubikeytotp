@@ -3,6 +3,10 @@ import sys
 from . import boto_plugin
 
 
+def _print(txt: str):
+    sys.stdout.buffer.write(txt.encode() + b'\n')
+
+
 class SessionEnv(BasicCommand):
     NAME = "session-env"
     DESCRIPTION = (
@@ -41,12 +45,12 @@ class SessionEnv(BasicCommand):
         credentials = self._session.get_credentials()
 
         frozen_credentials = credentials.get_frozen_credentials()
-        print("export AWS_ACCESS_KEY_ID={}".format(frozen_credentials.access_key))
-        print("export AWS_SECRET_ACCESS_KEY={}".format(frozen_credentials.secret_key))
+        _print("export AWS_ACCESS_KEY_ID={}".format(frozen_credentials.access_key))
+        _print("export AWS_SECRET_ACCESS_KEY={}".format(frozen_credentials.secret_key))
         if frozen_credentials.token is None:
-            print("unset AWS_SESSION_TOKEN")
+            _print("unset AWS_SESSION_TOKEN")
         else:
-            print("export AWS_SESSION_TOKEN={}".format(frozen_credentials.token))
+            _print("export AWS_SESSION_TOKEN={}".format(frozen_credentials.token))
 
         if hasattr(credentials, "_seconds_remaining"):
             seconds_to_expire = int(credentials._seconds_remaining())
